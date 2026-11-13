@@ -93,6 +93,14 @@
     font-size:clamp(17px,4.8vw,20px);line-height:2.1;font-weight:700;text-align:right;white-space:pre-line;min-height:260px;animation:pop2 .8s ease}
   @keyframes pop2{from{opacity:0;transform:scale(.9)}}
 
+  /* قفل الباسورد */
+  #lock{z-index:30;background:radial-gradient(ellipse at 50% 30%,#1b2550,#080b1c 70%)}
+  #pw{width:100%;max-width:280px;margin-top:18px;padding:14px 16px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;
+    color:#fff;font:700 20px 'Cairo',sans-serif;text-align:center;outline:none;user-select:text;-webkit-user-select:text}
+  #pwerr{min-height:24px;margin-top:10px;color:#ffb3c6;font-size:14px}
+  .shake{animation:shk .4s}
+  @keyframes shk{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+
   canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
   .fl{position:fixed;bottom:-40px;font-size:22px;pointer-events:none;z-index:4;animation:up linear forwards}
   @keyframes up{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
@@ -177,6 +185,16 @@
   <div class="paper hide" id="paper"></div>
 </section>
 
+<!-- قفل -->
+<section class="stage on" id="lock">
+  <div style="font-size:54px">🔒</div>
+  <div class="big" style="font-size:26px">الموقع ده ليه باسورد</div>
+  <div class="small">اكتب الباسورد اللي اتبعتلك</div>
+  <input id="pw" type="text" inputmode="text" autocomplete="off" autocapitalize="off" placeholder="الباسورد">
+  <div id="pwerr"></div>
+  <button class="btn" id="pwb" style="margin-top:6px">افتح 🔓</button>
+</section>
+
 <canvas id="fx"></canvas>
 <audio id="aud" loop preload="auto"></audio>
 
@@ -187,6 +205,7 @@ const ph = (c1,c2,emoji) => 'data:image/svg+xml;utf8,' + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="70" r="26" fill="#ffffff88"/><text x="200" y="175" font-size="90" text-anchor="middle">${emoji}</text></svg>`);
 
 const CONFIG = {
+  password: "1411",                // باسورد الدخول. اكتب "" (فاضي) لو عايز تشيل القفل
   name: "أمنية",
   from: "يحيى",
   target: "2026-11-14T00:00:00",   // بداية عيد الميلاد (بتوقيت التليفون)
@@ -260,6 +279,19 @@ function go(id){
 }
 function next(){ const i=flow.indexOf(cur); if(i<flow.length-1) go(flow[i+1]); }
 document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',next));
+
+// قفل الباسورد
+(function(){
+  const lock=$('lock');
+  if(!CONFIG.password){ lock.remove(); return; }
+  function tryPw(){
+    const v=$('pw').value.trim().toLowerCase(), ok=String(CONFIG.password).trim().toLowerCase();
+    if(v===ok){ lock.classList.remove('on'); setTimeout(()=>lock.remove(),1300); }
+    else{ $('pwerr').textContent='الباسورد غلط، جرّب تاني 🙈'; lock.classList.remove('shake'); void lock.offsetWidth; lock.classList.add('shake'); }
+  }
+  $('pwb').onclick=tryPw;
+  $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') tryPw(); });
+})();
 
 // نصوص ثابتة
 $('t1').textContent = `كل سنة وانتي طيبة يا ${CONFIG.name}.`;
