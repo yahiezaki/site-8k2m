@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>عيد ميلاد سعيد يا أمنيتي 🌙</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;background:#05070f;font-family:'Cairo',system-ui,-apple-system,'Segoe UI',Tahoma,sans-serif;color:#fff;user-select:none;-webkit-user-select:none}
+  .stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:24px;text-align:center;opacity:0;pointer-events:none;transition:opacity 1.2s ease;overflow-y:auto}
+  .stage.on{opacity:1;pointer-events:auto}
+  .small{font-size:15px;opacity:.8;margin:6px 0;line-height:1.9}
+  .big{font-size:clamp(28px,8vw,40px);font-weight:900;line-height:1.7;margin:10px 0}
+  .btn{margin-top:26px;border:0;border-radius:40px;padding:14px 42px;font:700 19px 'Cairo',sans-serif;color:#fff;
+    background:linear-gradient(135deg,#ff5f8f,#ff9a5f);box-shadow:0 8px 24px #ff5f8f55;cursor:pointer;transition:transform .15s;animation:pulse 2s infinite}
+  .btn:active{transform:scale(.94)}
+  @keyframes pulse{50%{box-shadow:0 8px 34px #ff5f8fbb}}
+  .hide{display:none!important}
+
+  /* 0) العد التنازلي */
+  #s0{background:radial-gradient(ellipse at 50% 30%,#14204a 0%,#070b1c 60%,#03040a 100%)}
+  .star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;opacity:.2;animation:tw 3s infinite ease-in-out}
+  @keyframes tw{50%{opacity:1;transform:scale(1.6)}}
+  .shoot{position:absolute;width:110px;height:2px;background:linear-gradient(90deg,#fff,transparent);opacity:0;transform:rotate(30deg);animation:sh 1.3s ease-out forwards}
+  @keyframes sh{0%{opacity:1;transform:translate(0,0) rotate(30deg)}100%{opacity:0;transform:translate(-260px,150px) rotate(30deg)}}
+  .moon{width:70px;height:70px;border-radius:50%;box-shadow:inset -22px 0 0 0 #f6e7b4;transform:rotate(-20deg);
+    filter:drop-shadow(0 0 14px #f6e7b488);margin-bottom:26px;animation:float 5s infinite ease-in-out}
+  @keyframes float{50%{transform:translateY(-10px) rotate(-20deg)}}
+  #timer{font-size:46px;font-weight:700;letter-spacing:3px;direction:ltr;margin:18px 0;color:#f6e7b4;text-shadow:0 0 18px #f6e7b455}
+
+  /* 1) كل سنة وانتي طيبة */
+  #s1{background:linear-gradient(180deg,#3b3a8f 0%,#8a63c9 35%,#e9a8d4 70%,#ffc99a 100%);color:#2a1b4d}
+  #s1 .big{color:#2a1b4d;font-size:clamp(32px,9vw,46px)}
+  #s1 .small{color:#4a2f78;opacity:.95;font-size:17px}
+  #s1 .btn{background:linear-gradient(135deg,#6c4bd6,#a24bd6);box-shadow:0 8px 24px #6c4bd655}
+
+  /* 2) السن */
+  #s2{background:linear-gradient(160deg,#0f9b8e,#1fc8a2 45%,#f9d976)}
+  #age{font-size:clamp(110px,38vw,190px);font-weight:900;line-height:1;text-shadow:0 8px 30px #0006}
+  #s2 .btn{background:linear-gradient(135deg,#ff6b6b,#ee5a9b)}
+
+  /* 3) رسايل */
+  .card{max-width:420px;width:100%;padding:34px 24px;border-radius:26px;background:#ffffff26;backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px);border:1px solid #ffffff55;font-size:clamp(19px,5.2vw,23px);line-height:2;font-weight:700;
+    min-height:270px;display:flex;align-items:center;justify-content:center;text-shadow:0 2px 8px #0003}
+  .dots{display:flex;gap:8px;margin:22px 0 4px}
+  .dots i{width:9px;height:9px;border-radius:50%;background:#fff6;transition:.3s}
+  .dots i.a{background:#fff;transform:scale(1.4)}
+
+  /* 4) أسباب */
+  #s4{background:linear-gradient(160deg,#1d2671,#c33764);justify-content:flex-start;padding-top:36px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:420px;width:100%;margin-top:14px}
+  .rc{perspective:700px;height:124px;cursor:pointer}
+  .rc .in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+  .rc.f .in{transform:rotateY(180deg)}
+  .rc span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;border-radius:18px;
+    backface-visibility:hidden;-webkit-backface-visibility:hidden;font-size:14.5px;font-weight:700;line-height:1.7}
+  .fr{background:#ffffff26;border:1px solid #fff5;font-size:34px!important}
+  .bk{transform:rotateY(180deg);background:linear-gradient(135deg,#ff7eb3,#ff758c)}
+
+  /* 5) لحظات لينا */
+  #s5{background:linear-gradient(160deg,#2b1055,#7597de);justify-content:flex-start;padding-top:26px;padding-bottom:30px}
+  .pols{display:flex;flex-direction:column;gap:18px;align-items:center;width:100%;margin-top:10px}
+  .pol{--r:-3deg;background:#fff;color:#333;padding:10px 10px 8px;border-radius:6px;transform:rotate(var(--r));box-shadow:0 14px 40px #0008;
+    width:100%;max-width:270px;animation:pop .8s ease both}
+  .pol:nth-child(2){--r:3deg;animation-delay:.35s}
+  .pol img{width:100%;height:19vh;max-height:170px;object-fit:cover;display:block;border-radius:3px}
+  .pol p{margin-top:8px;font-weight:700;font-size:13.5px;line-height:1.9}
+  @keyframes pop{from{opacity:0;transform:translateY(24px) rotate(var(--r)) scale(.95)}}
+
+  /* 6) تورتة */
+  #s6{background:radial-gradient(circle at 50% 40%,#3a1c5e,#150a2b 70%)}
+  .cake{position:relative;width:200px;height:170px;margin:50px 0 10px;cursor:pointer}
+  .layer{position:absolute;left:0;right:0;border-radius:14px}
+  .l1{bottom:0;height:70px;background:linear-gradient(#ff7eb3,#ff5f8f)}
+  .l2{bottom:70px;left:25px;right:25px;height:55px;background:linear-gradient(#ffd1e3,#ffb3d1)}
+  .drip{position:absolute;bottom:118px;left:25px;right:25px;height:14px;border-radius:14px 14px 40% 40%;background:#fff}
+  .candle{position:absolute;bottom:125px;left:calc(50% - 6px);width:12px;height:40px;border-radius:4px;background:repeating-linear-gradient(45deg,#6ec6ff 0 6px,#fff 6px 12px)}
+  .flame{position:absolute;bottom:163px;left:calc(50% - 8px);width:16px;height:26px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+    background:radial-gradient(circle at 50% 70%,#fff6c8,#ffb62e 60%,#ff7a1a);box-shadow:0 0 22px 8px #ffb62e88;animation:fl .25s infinite alternate}
+  @keyframes fl{to{transform:scale(1.12,.92) rotate(3deg)}}
+  .flame.off{display:none}
+  #final{opacity:0;transition:opacity 1.5s;margin-top:12px}
+  #final.on{opacity:1}
+
+  /* 7) جواب */
+  #s7{background:linear-gradient(160deg,#fbd3e9,#bb377d 120%)}
+  #env{font-size:110px;cursor:pointer;animation:float2 2s infinite ease-in-out;filter:drop-shadow(0 10px 20px #0005)}
+  @keyframes float2{50%{transform:translateY(-12px) scale(1.05)}}
+  .paper{background:#fffaf2;color:#4a2638;max-width:430px;width:100%;padding:28px 24px;border-radius:12px;box-shadow:0 18px 50px #0006;
+    font-size:clamp(17px,4.8vw,20px);line-height:2.1;font-weight:700;text-align:right;white-space:pre-line;min-height:260px;animation:pop2 .8s ease}
+  @keyframes pop2{from{opacity:0;transform:scale(.9)}}
+
+  canvas{position:fixed;inset:0;pointer-events:none;z-index:5}
+  .fl{position:fixed;bottom:-40px;font-size:22px;pointer-events:none;z-index:4;animation:up linear forwards}
+  @keyframes up{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
+  .sp{position:fixed;pointer-events:none;z-index:6;font-size:18px;animation:spark .9s ease-out forwards}
+  @keyframes spark{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+  #mute{position:fixed;top:14px;left:14px;z-index:9;width:42px;height:42px;border-radius:50%;border:0;background:#ffffff30;color:#fff;font-size:20px}
+</style>
+</head>
+<body>
+
+<button id="mute" class="hide">🔊</button>
+
+<!-- 0 -->
+<section class="stage on" id="s0">
+  <div class="moon" id="moon"></div>
+  <div class="small" id="soon">فاضل</div>
+  <div id="timer">00:00:00</div>
+  <div class="big" id="t0">عيد ميلادك لسه مابدأش…</div>
+  <div class="small" id="from0"></div>
+  <p class="small" id="note0">دوسي على الزرار، وماتسييبهوش لحد نص الليل 🌙</p>
+  <button class="btn hide" id="b0">دوسي</button>
+</section>
+
+<!-- 1 -->
+<section class="stage" id="s1">
+  <div class="small">١٢:٠٠ 🌙</div>
+  <div class="big" id="t1"></div>
+  <div class="small" style="margin-top:14px">كنت عايز أبقى أول واحد يقولهالك.<br>أهلاً بسنتك الجديدة 💜</div>
+  <button class="btn" data-next>كمّلي ✨</button>
+</section>
+
+<!-- 2 -->
+<section class="stage" id="s2">
+  <div class="small" style="font-size:20px">النهاردة بقى عندك</div>
+  <div id="age">0</div>
+  <div class="big">سنة من الجمال ✨</div>
+  <div class="small" style="font-size:17px;opacity:.95">يعني حوالي <b id="days">0</b> يوم وإنتي بتنوّري الدنيا،<br>وأنا أكتر واحد محظوظ إنك بقيتي في أيامي 🤍</div>
+  <button class="btn" data-next>فيه كلام ليكي</button>
+</section>
+
+<!-- 3 -->
+<section class="stage" id="s3">
+  <div class="card" id="card"></div>
+  <div class="dots" id="dots"></div>
+  <button class="btn" id="b3">التالي</button>
+</section>
+
+<!-- 4 -->
+<section class="stage" id="s4">
+  <div class="big" style="font-size:28px;margin:0">ليه بحبك؟ 💗</div>
+  <div class="small">اضغطي على كل قلب 👇</div>
+  <div class="grid" id="grid"></div>
+  <button class="btn hide" id="b4" data-next>كمّلي</button>
+</section>
+
+<!-- 5 لحظات لينا -->
+<section class="stage" id="s5">
+  <div class="big" style="font-size:26px;margin:0">لحظات لينا مع بعض 📸</div>
+  <div class="pols" id="pols"></div>
+  <button class="btn" data-next>كمّلي 🎂</button>
+</section>
+
+<!-- 6 -->
+<section class="stage" id="s6">
+  <div class="small" id="wish"></div>
+  <div class="cake" id="cake">
+    <div class="flame" id="flame"></div><div class="candle"></div>
+    <div class="drip"></div><div class="layer l2"></div><div class="layer l1"></div>
+  </div>
+  <button class="btn" id="b6">إنفخي الشمعة 💨</button>
+  <div id="final">
+    <div class="big" id="t6"></div>
+    <div class="small" style="font-size:17px">بحبك يا أجمل حاجة حصلتلي ❤️</div>
+  </div>
+  <button class="btn hide" id="b6n" data-next>فيه جواب ليكي 💌</button>
+</section>
+
+<!-- 7 -->
+<section class="stage" id="s7">
+  <div id="env">💌</div>
+  <div class="small" id="envhint">اضغطي عشان تفتحيه</div>
+  <div class="paper hide" id="paper"></div>
+</section>
+
+<canvas id="fx"></canvas>
+<audio id="aud" loop preload="auto"></audio>
+
+<script>
+/* ================== غيّر من هنا ================== */
+/* صورة مؤقتة جاهزة (SVG) لحد ما تحط صورك */
+const ph = (c1,c2,emoji) => 'data:image/svg+xml;utf8,' + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="70" r="26" fill="#ffffff88"/><text x="200" y="175" font-size="90" text-anchor="middle">${emoji}</text></svg>`);
+
+const CONFIG = {
+  name: "أمنية",
+  from: "يحيى",
+  target: "2026-11-14T00:00:00",   // بداية عيد الميلاد (بتوقيت التليفون)
+  birth:  "2004-11-14T00:00:00",   // تاريخ ميلادها (لحساب عدد الأيام)
+  age: 22,
+  music: "",                        // مثال: "song.mp3" (حطه جنب الملف). سيبه فاضي لو مش عايز
+  // ===== لحظات لينا (صورتين بس) =====
+  // دلوقتي فيهم صورتين مؤقتتين. لما تجهز صورك: حطهم جنب index.html
+  // وبدّل src:ph(...) بـ src:"1.jpg" و src:"2.jpg"  (واكتب تعليقك في cap)
+  photos: [
+    {src:"1.jpg", fb: ph('#ff9a9e','#a18cd1','🌙'),
+     cap:"أول صورة ليكي وإنتي لسه متمّية الـ 18… ودي أول مرة أشوفك فيها. أعجبت بيكي واتشديت ليكي أوي، وقلت خلاص، دي اللي هكمّل معاها عمري… ومن وقتها بدأت حكايتنا 🤍"},
+    {src:"2.jpg", fb: ph('#f6d365','#fda085','💍'),
+     cap:"صورتنا في أهم يوم في حياتنا… يوم خطوبتنا 💍 اليوم اللي عشنا لحظات كتير عشان نوصله. وعقبال صورة فرحنا يارب، ونتصور كل لحظة مع بعض ونعيش الأيام كلها سوا، يا أجمل حاجة في حياتي ❤️"}
+  ],
+  messages: [
+    "اسمك أمنية… ولسه مش مصدّق إن ربنا حقّق أمنيتي بجد وبقيتي ليا. 🤍",
+    "عرفتك وإنتي في السابعة عشر من عمرك، وأول عيد ميلاد ليكي عدّى عليا كنتي بتتمي فيه 18 سنة… ولسه مفيش أي حاجة بينا.",
+    "ومن أول ما شفتك وقلبي قالي: دي اللي هكمّل معاها عمري… ودلوقتي الأيام وصّلتنا لهنا.",
+    "وعشان كده النهاردة يوم ميلاد مختلف… لأنه أول يوم ميلاد ليكي وإحنا مخطوبين. 💍",
+    "وجودك في حياتي خلّى كل حاجة تقيلة تبقى أخف، وكل يوم عادي يبقى له طعم تاني.",
+    "أنا معاكي بحس بالأمان، وإن ليا بيت اسمه إنتي.",
+    "فرّحتيني وأنا زعلان، وسندتيني وأنا تعبان، وعلّمتيني أبقى أحسن عشانك.",
+    "أوعي تفتكري إن حبي ليكي كلام بس… ده أفعال، وهفضل أثبتهولك كل يوم.",
+    "يديمك ليا، ويحفظ ضحكتك، ويحققلك كل حاجة نفسك فيها يا أمنيتي. 🌸",
+    "اتنين وعشرين سنة… والعمر كله لينا يارب. كل سنة وإنتي أمنيتي. ❤️"
+  ],
+  reasons: [
+    "ضحكتك… بتنسيني أي حاجة كانت مضايقاني.",
+    "قلبك الطيب، وإنك بتحبي الناس بجد.",
+    "إنك بتسمعيني حتى لما أبقى بقول كلام ملوش لازمة 😅",
+    "إنك بتخليني أحب أبقى نسخة أحسن من نفسي.",
+    "طريقتك لما بتتكسفي أو بتغيري… بحبها أوي 🙈",
+    "ببساطة… لأنك إنتي."
+  ],
+  letter:
+`إلى أمنية،
+
+عرفتك وإنتي 17 سنة، وكل سنة عدّت عليا معاكي كانت أحلى من اللي قبلها.
+
+النهاردة أول عيد ميلاد ليكي وإحنا مخطوبين، والعمر كله لينا يارب.
+
+شكرًا إنك بتحبيني زي ما أنا، وشكرًا على كل مرة اخترتيني فيها.
+
+كل سنة وإنتي بخير، وكل سنة وأنا جنبك، وكل سنة وإنتي أمنيتي اللي بحمد ربنا عليها.
+
+بحبك. ❤️
+
+— يحيى`,
+  palettes: [
+    "linear-gradient(160deg,#ff9a9e,#fad0c4)","linear-gradient(160deg,#a18cd1,#fbc2eb)",
+    "linear-gradient(160deg,#4facfe,#00f2fe)","linear-gradient(160deg,#f6d365,#fda085)",
+    "linear-gradient(160deg,#43e97b,#38f9d7)","linear-gradient(160deg,#fa709a,#fee140)",
+    "linear-gradient(160deg,#667eea,#764ba2)","linear-gradient(160deg,#ee0979,#ff6a00)",
+    "linear-gradient(160deg,#00c6ff,#9f6bff)","linear-gradient(160deg,#ff758c,#ff7eb3)"
+  ]
+};
+/* ================================================= */
+
+const $ = id => document.getElementById(id);
+const flow = ['s0','s1','s2','s3','s4','s5','s6','s7'];
+let cur = 's0', heartsTimer, typeTok = 0;
+
+function go(id){
+  document.querySelectorAll('.stage').forEach(s=>s.classList.toggle('on', s.id===id));
+  cur = id;
+  if(id!=='s0' && !heartsTimer) heartsTimer = setInterval(heart, 500);
+  if(id==='s2') countUp();
+  if(id==='s3') showMsg(0);
+  if(id==='s6') $('wish').textContent = `اتمني أمنية يا ${CONFIG.name}… وبعدين دوسي على الشمعة 🕯️`;
+}
+function next(){ const i=flow.indexOf(cur); if(i<flow.length-1) go(flow[i+1]); }
+document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',next));
+
+// نصوص ثابتة
+$('t1').textContent = `كل سنة وانتي طيبة يا ${CONFIG.name}.`;
+$('t6').textContent = `كل سنة وانتي طيبة يا ${CONFIG.name} 🎂`;
+$('from0').textContent = `من ${CONFIG.from}`;
+
+// ماشي الكتابة حرف حرف
+function typeText(el, text, speed=38){
+  const tok=++typeTok; el.textContent='';
+  let i=0; (function step(){ if(tok!==typeTok) return; el.textContent=text.slice(0,++i); if(i<text.length) setTimeout(step,speed); })();
+}
+
+// نجوم + نيازك
+for(let i=0;i<70;i++){
+  const s=document.createElement('div');s.className='star';
+  s.style.cssText=`top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;transform:scale(${.5+Math.random()})`;
+  $('s0').appendChild(s);
+}
+setInterval(()=>{ if(cur!=='s0') return;
+  const s=document.createElement('div'); s.className='shoot';
+  s.style.cssText=`top:${Math.random()*40}%;left:${40+Math.random()*60}%`;
+  $('s0').appendChild(s); setTimeout(()=>s.remove(),1400);
+},2600);
+
+// العد التنازلي
+const target = new Date(CONFIG.target).getTime();
+const pad = n => String(n).padStart(2,'0');
+function tick(){
+  const d = target - Date.now();
+  if(d<=0){
+    $('timer').classList.add('hide'); $('soon').textContent='🌙';
+    $('t0').textContent=`جه ميعادك يا ${CONFIG.name}…`; $('note0').classList.add('hide');
+    $('b0').classList.remove('hide'); return true;
+  }
+  const h=Math.floor(d/36e5), m=Math.floor(d%36e5/6e4), s=Math.floor(d%6e4/1e3);
+  $('timer').textContent=`${pad(h)}:${pad(m)}:${pad(s)}`; return false;
+}
+tick(); const iv=setInterval(()=>{ if(tick()) clearInterval(iv) },1000);
+
+// للتجربة: 3 دوسات على القمر
+let taps=0; $('moon').addEventListener('click',()=>{ if(++taps>=3){ clearInterval(iv); startShow(); } });
+$('b0').onclick=startShow;
+function startShow(){ go('s1'); burst(innerWidth/2, innerHeight*0.3); playMusic(); }
+
+// موسيقى
+const aud=$('aud');
+if(CONFIG.music){ aud.src=CONFIG.music; $('mute').classList.remove('hide'); }
+function playMusic(){ if(CONFIG.music) aud.play().catch(()=>{}); }
+$('mute').onclick=()=>{ if(aud.paused){aud.play();$('mute').textContent='🔊'}else{aud.pause();$('mute').textContent='🔇'} };
+
+// السن والأيام
+function countUp(){
+  const days = Math.round((target - new Date(CONFIG.birth).getTime())/864e5);
+  let n=0; const t=setInterval(()=>{ $('age').textContent=++n; if(n>=CONFIG.age) clearInterval(t) },70);
+  let d=0, step=Math.ceil(days/50); const t2=setInterval(()=>{ d=Math.min(d+step,days); $('days').textContent=d.toLocaleString('ar-EG'); if(d>=days) clearInterval(t2) },30);
+}
+
+// رسايل
+let mi=0;
+function showMsg(i){
+  mi=i;
+  $('s3').style.background=CONFIG.palettes[i%CONFIG.palettes.length];
+  typeText($('card'), CONFIG.messages[i]);
+  $('dots').innerHTML=CONFIG.messages.map((_,k)=>`<i class="${k===i?'a':''}"></i>`).join('');
+  $('b3').textContent = i===CONFIG.messages.length-1 ? 'كمّلي 💗' : 'التالي';
+}
+$('b3').onclick=()=>{ mi<CONFIG.messages.length-1 ? showMsg(mi+1) : next() };
+
+// أسباب (كروت بتتقلب)
+let opened=0;
+$('grid').innerHTML = CONFIG.reasons.map(r=>`<div class="rc"><div class="in"><span class="fr">💗</span><span class="bk">${r}</span></div></div>`).join('');
+document.querySelectorAll('.rc').forEach(c=>c.addEventListener('click',()=>{
+  if(c.classList.contains('f')) return; c.classList.add('f'); burstEl(c);
+  if(++opened===CONFIG.reasons.length) setTimeout(()=>$('b4').classList.remove('hide'),700);
+}));
+function burstEl(el){ const r=el.getBoundingClientRect(); burst(r.left+r.width/2, r.top+r.height/2); }
+
+// لحظات لينا (صورتين)
+$('pols').innerHTML = CONFIG.photos.slice(0,2).map(p=>`<div class="pol"><img alt=""><p>${p.cap||''}</p></div>`).join('');
+document.querySelectorAll('.pol img').forEach((img,i)=>{
+  const p=CONFIG.photos[i];
+  img.onerror=()=>{ img.onerror=null; if(p.fb) img.src=p.fb; };
+  img.src=p.src;
+});
+
+// الشمعة
+function blow(){
+  if($('flame').classList.contains('off')) return;
+  $('flame').classList.add('off'); $('b6').classList.add('hide'); $('wish').textContent='يارب أمنيتك تتحقق ✨';
+  $('final').classList.add('on');
+  if(navigator.vibrate) navigator.vibrate([80,60,80]);
+  let k=0; const f=setInterval(()=>{ burst(Math.random()*innerWidth, Math.random()*innerHeight*.55); if(++k>14) clearInterval(f) },450);
+  setTimeout(()=>$('b6n').classList.remove('hide'),3500);
+}
+$('b6').onclick=blow; $('cake').onclick=blow;
+
+// الجواب
+$('env').onclick=()=>{
+  $('env').classList.add('hide'); $('envhint').classList.add('hide');
+  const p=$('paper'); p.classList.remove('hide'); typeText(p, CONFIG.letter, 45);
+  burst(innerWidth/2, innerHeight*.3);
+};
+
+// قلوب طايرة
+function heart(){
+  const e=document.createElement('span'); e.className='fl';
+  e.textContent=['❤️','💜','🌸','✨','💖','🌙'][Math.floor(Math.random()*6)];
+  e.style.left=Math.random()*100+'vw'; e.style.fontSize=(16+Math.random()*20)+'px';
+  e.style.animationDuration=(5+Math.random()*5)+'s';
+  document.body.appendChild(e); setTimeout(()=>e.remove(),10000);
+}
+
+// لمعة مع كل لمسة
+document.addEventListener('pointerdown',e=>{
+  for(let i=0;i<5;i++){
+    const s=document.createElement('span'); s.className='sp'; s.textContent=['✨','💖','⭐'][i%3];
+    s.style.left=e.clientX+'px'; s.style.top=e.clientY+'px';
+    s.style.setProperty('--dx',(Math.random()*80-40)+'px'); s.style.setProperty('--dy',(Math.random()*-80-10)+'px');
+    document.body.appendChild(s); setTimeout(()=>s.remove(),900);
+  }
+});
+
+// ألعاب نارية
+const cv=$('fx'), cx=cv.getContext('2d'); let P=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight} size(); addEventListener('resize',size);
+function burst(x,y){
+  const hue=Math.random()*360;
+  for(let i=0;i<46;i++){
+    const a=Math.PI*2*i/46, v=2+Math.random()*3.5;
+    P.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,c:`hsl(${hue+Math.random()*40},100%,65%)`});
+  }
+}
+(function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  P=P.filter(p=>p.l>0);
+  P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.045;p.vx*=.985;p.l-=.013;
+    cx.globalAlpha=Math.max(p.l,0);cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,2.4,0,7);cx.fill()});
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
