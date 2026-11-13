@@ -95,8 +95,10 @@
 
   /* قفل الباسورد */
   #lock{z-index:30;background:radial-gradient(ellipse at 50% 30%,#1b2550,#080b1c 70%)}
-  #pw{width:100%;max-width:280px;margin-top:18px;padding:14px 16px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;
+  #pw,.inp{width:100%;max-width:280px;margin-top:18px;padding:14px 16px;border-radius:14px;border:1px solid #ffffff55;background:#ffffff1c;
     color:#fff;font:700 20px 'Cairo',sans-serif;text-align:center;outline:none;user-select:text;-webkit-user-select:text}
+  #admin{z-index:40;background:radial-gradient(ellipse at 50% 30%,#1f3a2e,#08140f 70%)}
+  .col{display:flex;flex-direction:column;align-items:center;width:100%}
   #pwerr{min-height:24px;margin-top:10px;color:#ffb3c6;font-size:14px}
   .shake{animation:shk .4s}
   @keyframes shk{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
@@ -185,6 +187,23 @@
   <div class="paper hide" id="paper"></div>
 </section>
 
+<!-- لوحة التحكم (افتحها بـ #admin في آخر اللينك) -->
+<section class="stage" id="admin">
+  <div style="font-size:44px">🛠️</div>
+  <div class="big" style="font-size:24px">لوحة التحكم</div>
+  <div class="col" id="adA">
+    <input id="apin" class="inp" type="password" placeholder="PIN الأدمن" autocomplete="off">
+    <button class="btn" id="apb" style="margin-top:14px">دخول</button>
+  </div>
+  <div class="col hide" id="adB">
+    <div class="small">الباسورد الحالي: <b id="curpw">…</b></div>
+    <input id="npw" class="inp" type="text" placeholder="باسورد جديد" autocomplete="off" autocapitalize="off">
+    <button class="btn" id="npb" style="margin-top:14px">حفظ ✅</button>
+    <button class="btn" id="rnd" style="margin-top:12px;background:linear-gradient(135deg,#6c4bd6,#a24bd6);box-shadow:none;animation:none">باسورد عشوائي 🎲</button>
+  </div>
+  <div class="small" id="admsg" style="margin-top:14px"></div>
+</section>
+
 <!-- قفل -->
 <section class="stage on" id="lock">
   <div style="font-size:54px">🔒</div>
@@ -205,7 +224,9 @@ const ph = (c1,c2,emoji) => 'data:image/svg+xml;utf8,' + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="400" height="300" fill="url(#g)"/><circle cx="320" cy="70" r="26" fill="#ffffff88"/><text x="200" y="175" font-size="90" text-anchor="middle">${emoji}</text></svg>`);
 
 const CONFIG = {
-  password: "1411",                // باسورد الدخول. اكتب "" (فاضي) لو عايز تشيل القفل
+  password: "1411",                // الباسورد المبدئي. اكتب "" (فاضي) لو عايز تشيل القفل
+  dbUrl: "https://yahie-6d4ca-default-rtdb.europe-west1.firebasedatabase.app",                        // رابط Firebase Realtime Database عشان تغيّر الباسورد من الموقع نفسه (شوف الشرح)
+  adminPin: "14112004",        // PIN لوحة التحكم (غيّره!)
   name: "أمنية",
   from: "يحيى",
   target: "2026-11-14T00:00:00",   // بداية عيد الميلاد (بتوقيت التليفون)
@@ -270,7 +291,7 @@ const flow = ['s0','s1','s2','s3','s4','s5','s6','s7'];
 let cur = 's0', heartsTimer, typeTok = 0;
 
 function go(id){
-  document.querySelectorAll('.stage').forEach(s=>s.classList.toggle('on', s.id===id));
+  flow.forEach(f=>$(f).classList.toggle('on', f===id));
   cur = id;
   if(id!=='s0' && !heartsTimer) heartsTimer = setInterval(heart, 500);
   if(id==='s2') countUp();
@@ -280,17 +301,54 @@ function go(id){
 function next(){ const i=flow.indexOf(cur); if(i<flow.length-1) go(flow[i+1]); }
 document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',next));
 
-// قفل الباسورد
+// قفل الباسورد (+ لوحة تحكم)
+const DB = CONFIG.dbUrl ? CONFIG.dbUrl.replace(/\/+$/,'') + '/pw.json' : '';
+async function getPw(){
+  const local = String(CONFIG.password||'');
+  if(!DB) return local;
+  try{
+    const r = await fetch(DB + '?t=' + Date.now(), {cache:'no-store'});
+    if(!r.ok) throw 0;
+    const v = await r.json();
+    return v==null ? local : String(v);
+  }catch(e){ return local; }
+}
+async function setPw(v){
+  const r = await fetch(DB, {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify(v)});
+  if(!r.ok) throw 0;
+}
 (function(){
   const lock=$('lock');
-  if(!CONFIG.password){ lock.remove(); return; }
-  function tryPw(){
-    const v=$('pw').value.trim().toLowerCase(), ok=String(CONFIG.password).trim().toLowerCase();
-    if(v===ok){ lock.classList.remove('on'); setTimeout(()=>lock.remove(),1300); }
-    else{ $('pwerr').textContent='الباسورد غلط، جرّب تاني 🙈'; lock.classList.remove('shake'); void lock.offsetWidth; lock.classList.add('shake'); }
+  if(!CONFIG.password && !DB){ lock.remove(); }
+  else{
+    async function tryPw(){
+      const cur = (await getPw()).trim().toLowerCase();
+      const v = $('pw').value.trim().toLowerCase();
+      if(!cur || v===cur){ lock.classList.remove('on'); setTimeout(()=>lock.remove(),1300); }
+      else{ $('pwerr').textContent='الباسورد غلط، جرّب تاني 🙈'; lock.classList.remove('shake'); void lock.offsetWidth; lock.classList.add('shake'); }
+    }
+    $('pwb').onclick=tryPw;
+    $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') tryPw(); });
   }
-  $('pwb').onclick=tryPw;
-  $('pw').addEventListener('keydown',e=>{ if(e.key==='Enter') tryPw(); });
+
+  // لوحة التحكم: افتح اللينك + #admin
+  const ad=$('admin');
+  function chk(){ ad.classList.toggle('on', location.hash==='#admin'); }
+  chk(); addEventListener('hashchange',chk);
+  const msg=t=>$('admsg').textContent=t;
+  $('apb').onclick=async()=>{
+    if($('apin').value!==CONFIG.adminPin){ msg('الـ PIN غلط ❌'); return; }
+    if(!DB){ msg('اربط Firebase الأول (حط dbUrl في الكود).'); return; }
+    $('adA').classList.add('hide'); $('adB').classList.remove('hide'); msg('');
+    $('curpw').textContent = await getPw();
+  };
+  $('npb').onclick=async()=>{
+    const v=$('npw').value.trim();
+    if(!v){ msg('اكتب باسورد الأول'); return; }
+    try{ await setPw(v); $('curpw').textContent=v; $('npw').value=''; msg('اتغيّر ✅ الباسورد الجديد شغال دلوقتي'); }
+    catch(e){ msg('حصلت مشكلة في الحفظ، اتأكد من النت ومن إعدادات Firebase'); }
+  };
+  $('rnd').onclick=()=>{ $('npw').value=Math.random().toString(36).slice(2,8); };
 })();
 
 // نصوص ثابتة
